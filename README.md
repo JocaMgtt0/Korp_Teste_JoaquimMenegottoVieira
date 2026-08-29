@@ -1,5 +1,7 @@
 # Korp_Teste_JoaquimMenegottoVieira
 
+[![CI](https://github.com/JocaMgtt0/Korp_Teste_JoaquimMenegottoVieira/actions/workflows/ci.yml/badge.svg)](https://github.com/JocaMgtt0/Korp_Teste_JoaquimMenegottoVieira/actions/workflows/ci.yml)
+
 Sistema de emissão de Notas Fiscais em arquitetura de microsserviços.
 Teste prático Korp, desenvolvido por **Joaquim Menegotto Vieira**.
 
