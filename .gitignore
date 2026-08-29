@@ -36,3 +36,6 @@ Thumbs.db
 # PDFs gerados em runtime nao entram no repositorio
 backend/**/pdfs/
 *.log
+
+# Guia de estudo pessoal, nao faz parte da entrega
+GUIA_DE_ESTUDO.md
