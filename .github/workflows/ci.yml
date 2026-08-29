@@ -1,0 +1,39 @@
+name: CI
+
+# Roda a cada push e a cada pull request na branch principal.
+# O objetivo e provar que o projeto compila e passa nos testes em uma
+# maquina limpa, sem depender de nada instalado no computador do autor.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend:
+    name: Backend (.NET 8)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar o SDK do .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # Restore separado do build deixa claro, quando algo falha,
+      # se o problema foi baixar dependencia ou compilar codigo.
+      - name: Restaurar dependencias
+        working-directory: ./backend
+        run: dotnet restore
+
+      # Warnings viram erros: impede que o projeto acumule sujeira silenciosa.
+      - name: Compilar
+        working-directory: ./backend
+        run: dotnet build --no-restore --configuration Release -warnaserror
+
+      - name: Rodar os testes
+        working-directory: ./backend
+        run: dotnet test --no-build --configuration Release --verbosity normal
