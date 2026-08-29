@@ -1,0 +1,122 @@
+services:
+  # ---------------------------------------------------------------
+  # Bancos de dados: um por servico, sem tabela compartilhada.
+  # Instancias separadas reforcam o isolamento entre microsservicos.
+  # ---------------------------------------------------------------
+  db-estoque:
+    image: postgres:16-alpine
+    container_name: korp-db-estoque
+    environment:
+      POSTGRES_USER: korp
+      POSTGRES_PASSWORD: korp
+      POSTGRES_DB: estoque_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - dados-estoque:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U korp -d estoque_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [korp]
+
+  db-faturamento:
+    image: postgres:16-alpine
+    container_name: korp-db-faturamento
+    environment:
+      POSTGRES_USER: korp
+      POSTGRES_PASSWORD: korp
+      POSTGRES_DB: faturamento_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - dados-faturamento:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U korp -d faturamento_db"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks: [korp]
+
+  # ---------------------------------------------------------------
+  # Servico de Estoque: dono unico do saldo dos produtos.
+  # ---------------------------------------------------------------
+  estoque:
+    build:
+      context: ./backend
+      dockerfile: src/Estoque/Korp.Estoque.Api/Dockerfile
+    container_name: korp-estoque
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Padrao: "Host=db-estoque;Port=5432;Database=estoque_db;Username=korp;Password=korp"
+    ports:
+      - "5001:8080"
+    depends_on:
+      db-estoque:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    networks: [korp]
+
+  # ---------------------------------------------------------------
+  # Servico de Faturamento: notas fiscais e orquestracao da impressao.
+  # Fala com o Estoque via HTTP, protegido por Polly.
+  # ---------------------------------------------------------------
+  faturamento:
+    build:
+      context: ./backend
+      dockerfile: src/Faturamento/Korp.Faturamento.Api/Dockerfile
+    container_name: korp-faturamento
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__Padrao: "Host=db-faturamento;Port=5432;Database=faturamento_db;Username=korp;Password=korp"
+      ServicoEstoque__BaseUrl: "http://estoque:8080"
+      ServicoEstoque__TimeoutSegundos: "5"
+      ServicoEstoque__TentativasRetry: "3"
+      ServicoEstoque__FalhasParaAbrirCircuito: "5"
+      ServicoEstoque__SegundosCircuitoAberto: "15"
+    ports:
+      - "5002:8080"
+    depends_on:
+      db-faturamento:
+        condition: service_healthy
+    # Nao usa depends_on service_healthy do estoque de proposito:
+    # o Faturamento precisa subir mesmo com o Estoque fora do ar.
+    # E exatamente esse o cenario de falha exigido pelo desafio.
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 20s
+    networks: [korp]
+
+  # ---------------------------------------------------------------
+  # Frontend Angular servido por nginx.
+  # ---------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: korp-frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - estoque
+      - faturamento
+    networks: [korp]
+
+volumes:
+  dados-estoque:
+  dados-faturamento:
+
+networks:
+  korp:
+    driver: bridge
