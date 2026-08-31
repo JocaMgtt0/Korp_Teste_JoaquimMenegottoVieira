@@ -148,8 +148,24 @@ _A preencher: onde LINQ é usado em queries traduzidas para SQL pelo EF Core e o
 ## Testes
 
 ```bash
-dotnet test
+cd backend && dotnet test
 ```
+
+83 testes automatizados. Os de integração sobem um PostgreSQL real em container via Testcontainers, então o Docker precisa estar rodando.
+
+| Suíte | Testes | O que cobre |
+|---|---|---|
+| Estoque, domínio | 21 | Regras do agregado Produto: saldo nunca negativo, quantidade válida, baixa e estorno |
+| Estoque, integração | 14 | HTTP e PostgreSQL reais: CRUD, atomicidade da baixa, RN09, **e o cenário de concorrência do desafio** |
+| Faturamento, domínio | 21 | Máquina de estados da nota e regras de edição |
+| Faturamento, caso de uso | 14 | Saga de impressão com dublês: todos os caminhos de falha e compensação |
+| Faturamento, integração | 13 | HTTP e PostgreSQL reais: numeração sob concorrência, fluxo completo, PDF, compensação |
+
+Três testes merecem destaque, porque provam requisitos que asserção de código não alcança:
+
+- **`Duas_notas_disputando_a_ultima_unidade_apenas_uma_vence`**: duas requisições paralelas contra um produto com saldo 1. Exatamente uma passa, a outra recebe recusa explícita, e o saldo termina em zero. É o requisito opcional (a) do desafio.
+- **`Criacoes_simultaneas_nunca_repetem_numeracao`**: 20 notas criadas em paralelo, todas com número único. Prova que a sequence do banco resolve o que `MAX(numero) + 1` não resolveria.
+- **`Quando_ate_o_estorno_falha_a_nota_fica_em_processamento`**: o pior cenário da saga. A nota fica marcada como pendente em vez de voltar a Aberta, porque o saldo saiu e não voltou.
 
 ---
 
