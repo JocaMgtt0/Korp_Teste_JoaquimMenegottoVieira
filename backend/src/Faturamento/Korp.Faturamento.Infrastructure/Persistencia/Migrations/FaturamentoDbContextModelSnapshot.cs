@@ -27,7 +27,6 @@ namespace Korp.Faturamento.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Faturamento.Domain.Entidades.ItemNotaFiscal", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -68,7 +67,6 @@ namespace Korp.Faturamento.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Faturamento.Domain.Entidades.NotaFiscal", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 

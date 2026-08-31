@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Korp.Faturamento.Infrastructure.Persistencia.Migrations
 {
     [DbContext(typeof(FaturamentoDbContext))]
-    [Migration("20260831195637_Inicial")]
+    [Migration("20260831201205_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -30,7 +30,6 @@ namespace Korp.Faturamento.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Faturamento.Domain.Entidades.ItemNotaFiscal", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -71,7 +70,6 @@ namespace Korp.Faturamento.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Faturamento.Domain.Entidades.NotaFiscal", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 

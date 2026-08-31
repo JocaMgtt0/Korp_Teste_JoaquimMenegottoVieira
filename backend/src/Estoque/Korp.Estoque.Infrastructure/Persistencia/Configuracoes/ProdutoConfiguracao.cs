@@ -15,7 +15,16 @@ public class ProdutoConfiguracao : IEntityTypeConfiguration<Produto>
             t.HasCheckConstraint("ck_produtos_saldo_nao_negativo", "saldo >= 0"));
 
         builder.HasKey(p => p.Id);
-        builder.Property(p => p.Id).HasColumnName("id");
+
+        // ValueGeneratedNever nao e detalhe: as entidades deste projeto geram
+        // o proprio Guid no construtor. Sem isso, o EF assume por convencao
+        // que chave Guid e gerada por ele (ValueGeneratedOnAdd) e passa a usar
+        // a heuristica "chave preenchida significa registro existente".
+        // Resultado: entidade nova alcancada por navegacao vira UPDATE em vez
+        // de INSERT, e o UPDATE afeta zero linhas.
+        builder.Property(p => p.Id)
+            .HasColumnName("id")
+            .ValueGeneratedNever();
 
         builder.Property(p => p.Codigo)
             .HasColumnName("codigo")

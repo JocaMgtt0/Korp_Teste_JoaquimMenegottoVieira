@@ -11,7 +11,13 @@ public class MovimentacaoEstoqueConfiguracao : IEntityTypeConfiguration<Moviment
         builder.ToTable("movimentacoes_estoque");
 
         builder.HasKey(m => m.Id);
-        builder.Property(m => m.Id).HasColumnName("id");
+
+        // Ver a explicacao em ProdutoConfiguracao: a movimentacao e criada
+        // dentro do agregado Produto e alcancada por navegacao, entao sem
+        // ValueGeneratedNever o EF tentaria UPDATE em vez de INSERT.
+        builder.Property(m => m.Id)
+            .HasColumnName("id")
+            .ValueGeneratedNever();
 
         builder.Property(m => m.ProdutoId)
             .HasColumnName("produto_id")

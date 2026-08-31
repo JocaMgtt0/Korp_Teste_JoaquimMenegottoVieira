@@ -67,6 +67,17 @@ public static class InjecaoDeDependencia
         var falhasParaAbrir = int.TryParse(secao["FalhasParaAbrirCircuito"], out var f) ? f : 5;
         var segundosAberto = int.TryParse(secao["SegundosCircuitoAberto"], out var s) ? s : 15;
 
+        // O circuit breaker precisa ser UMA instancia compartilhada por toda a
+        // aplicacao. Ele e stateful: conta falhas ao longo do tempo para
+        // decidir quando abrir. A sobrecarga de AddPolicyHandler que recebe
+        // uma fabrica executa essa fabrica A CADA REQUISICAO, o que criaria um
+        // breaker zerado toda vez e o circuito nunca abriria.
+        //
+        // O retry nao tem esse problema porque e stateless: cada requisicao
+        // conta as proprias tentativas, entao pode ser criado por chamada.
+        servicos.AddSingleton(provedor => new CircuitoDoEstoque(
+            PoliticaDeCircuitBreaker(provedor, falhasParaAbrir, segundosAberto)));
+
         servicos.AddHttpClient<IServicoDeEstoque, ClienteHttpDeEstoque>(cliente =>
             {
                 cliente.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
@@ -78,10 +89,21 @@ public static class InjecaoDeDependencia
                 cliente.Timeout = TimeSpan.FromSeconds(timeout * tentativas + 10);
             })
             .AddPolicyHandler((provedor, _) => PoliticaDeRetry(provedor, tentativas))
-            .AddPolicyHandler((provedor, _) => PoliticaDeCircuitBreaker(
-                provedor, falhasParaAbrir, segundosAberto))
+            .AddPolicyHandler((provedor, _) =>
+                provedor.GetRequiredService<CircuitoDoEstoque>().Politica)
             .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(
                 TimeSpan.FromSeconds(timeout)));
+    }
+
+    /// <summary>
+    /// Invólucro que existe apenas para dar um tipo proprio ao circuit breaker
+    /// e assim registra-lo como singleton sem colidir com outras politicas.
+    /// </summary>
+    private sealed class CircuitoDoEstoque
+    {
+        public CircuitoDoEstoque(IAsyncPolicy<HttpResponseMessage> politica) => Politica = politica;
+
+        public IAsyncPolicy<HttpResponseMessage> Politica { get; }
     }
 
     private static IAsyncPolicy<HttpResponseMessage> PoliticaDeRetry(

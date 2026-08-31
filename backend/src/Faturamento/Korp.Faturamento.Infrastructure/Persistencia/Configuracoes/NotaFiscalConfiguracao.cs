@@ -11,7 +11,14 @@ public class NotaFiscalConfiguracao : IEntityTypeConfiguration<NotaFiscal>
         builder.ToTable("notas_fiscais");
 
         builder.HasKey(n => n.Id);
-        builder.Property(n => n.Id).HasColumnName("id");
+
+        // As entidades geram o proprio Guid no construtor. Sem
+        // ValueGeneratedNever, o EF assume chave gerada por ele e usa a
+        // heuristica "chave preenchida significa registro existente",
+        // emitindo UPDATE onde deveria ser INSERT.
+        builder.Property(n => n.Id)
+            .HasColumnName("id")
+            .ValueGeneratedNever();
 
         builder.Property(n => n.Numero)
             .HasColumnName("numero")
@@ -65,7 +72,13 @@ public class ItemNotaFiscalConfiguracao : IEntityTypeConfiguration<ItemNotaFisca
             t.HasCheckConstraint("ck_itens_quantidade_positiva", "quantidade > 0"));
 
         builder.HasKey(i => i.Id);
-        builder.Property(i => i.Id).HasColumnName("id");
+
+        // Este e o caso que revelou o problema: o item nasce dentro do
+        // agregado NotaFiscal e chega ao EF pela colecao de navegacao,
+        // exatamente o cenario em que a heuristica de chave decide errado.
+        builder.Property(i => i.Id)
+            .HasColumnName("id")
+            .ValueGeneratedNever();
 
         builder.Property(i => i.NotaFiscalId)
             .HasColumnName("nota_fiscal_id")

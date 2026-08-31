@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Korp.Estoque.Infrastructure.Persistencia.Migrations
 {
     [DbContext(typeof(EstoqueDbContext))]
-    [Migration("20260829185947_Inicial")]
+    [Migration("20260831201157_Inicial")]
     partial class Inicial
     {
         /// <inheritdoc />
@@ -28,7 +28,6 @@ namespace Korp.Estoque.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Estoque.Domain.Entidades.MovimentacaoEstoque", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -75,7 +74,6 @@ namespace Korp.Estoque.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Estoque.Domain.Entidades.Produto", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 

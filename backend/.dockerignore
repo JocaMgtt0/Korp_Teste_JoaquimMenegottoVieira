@@ -1,0 +1,11 @@
+# Artefatos de build da maquina host. Copiar bin/ e obj/ do Windows para
+# dentro de um container Linux faz o restore encontrar caminhos invalidos
+# e falhar de forma confusa.
+**/bin/
+**/obj/
+
+**/.vs/
+**/.vscode/
+**/.idea/
+**/*.user
+**/TestResults/

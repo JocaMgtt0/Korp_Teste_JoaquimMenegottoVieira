@@ -25,7 +25,6 @@ namespace Korp.Estoque.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Estoque.Domain.Entidades.MovimentacaoEstoque", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -72,7 +71,6 @@ namespace Korp.Estoque.Infrastructure.Persistencia.Migrations
             modelBuilder.Entity("Korp.Estoque.Domain.Entidades.Produto", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
