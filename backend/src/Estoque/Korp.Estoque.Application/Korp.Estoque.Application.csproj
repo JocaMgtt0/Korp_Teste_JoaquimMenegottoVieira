@@ -4,10 +4,6 @@
     <ProjectReference Include="..\Korp.Estoque.Domain\Korp.Estoque.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="FluentValidation" Version="11.9.0" />
-  </ItemGroup>
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
