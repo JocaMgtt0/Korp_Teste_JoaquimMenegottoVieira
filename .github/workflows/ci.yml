@@ -34,6 +34,11 @@ jobs:
         working-directory: ./backend
         run: dotnet build --no-restore --configuration Release -warnaserror
 
+      # TreatNoTestsAsError impede o cenario mais traicoeiro de CI: um projeto
+      # de teste que para de descobrir seus casos e mesmo assim devolve verde.
+      # Sem essa trava, "zero testes executados" e considerado sucesso.
       - name: Rodar os testes
         working-directory: ./backend
-        run: dotnet test --no-build --configuration Release --verbosity normal
+        run: >
+          dotnet test --no-build --configuration Release --verbosity normal
+          -- RunConfiguration.TreatNoTestsAsError=true
