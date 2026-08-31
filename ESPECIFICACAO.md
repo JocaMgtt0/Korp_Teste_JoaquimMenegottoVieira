@@ -12,7 +12,7 @@ Teste prático Korp. Documento de requisitos fechado antes da implementação.
 
 | Item | Decisão |
 |---|---|
-| Frontend | Angular 17+, standalone components, Angular Material |
+| Frontend | Angular 22, standalone components, signals, Angular Material |
 | Backend | .NET 8, ASP.NET Core |
 | Arquitetura de sistema | 2 microsserviços: Estoque e Faturamento |
 | Arquitetura interna | Clean Architecture, 4 projetos por serviço |

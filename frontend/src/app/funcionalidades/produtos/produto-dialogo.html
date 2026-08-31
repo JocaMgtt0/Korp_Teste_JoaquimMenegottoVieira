@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>{{ edicao ? 'Editar produto' : 'Novo produto' }}</h2>
+
+<mat-dialog-content [formGroup]="formulario" class="formulario">
+  <mat-form-field appearance="outline">
+    <mat-label>Codigo</mat-label>
+    <input matInput formControlName="codigo" placeholder="PRD-011" />
+    @if (edicao) {
+      <mat-hint>O codigo e imutavel apos a criacao.</mat-hint>
+    }
+    @if (formulario.controls.codigo.hasError('required')) {
+      <mat-error>Informe o codigo.</mat-error>
+    }
+    @if (formulario.controls.codigo.hasError('maxlength')) {
+      <mat-error>Maximo de 50 caracteres.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Descricao</mat-label>
+    <input matInput formControlName="descricao" placeholder="Teclado mecanico ABNT2" />
+    @if (formulario.controls.descricao.hasError('required')) {
+      <mat-error>Informe a descricao.</mat-error>
+    }
+    @if (formulario.controls.descricao.hasError('maxlength')) {
+      <mat-error>Maximo de 200 caracteres.</mat-error>
+    }
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Saldo em estoque</mat-label>
+    <input matInput type="number" min="0" formControlName="saldo" />
+    @if (formulario.controls.saldo.hasError('min')) {
+      <mat-error>O saldo nao pode ser negativo.</mat-error>
+    }
+    @if (formulario.controls.saldo.hasError('required')) {
+      <mat-error>Informe o saldo.</mat-error>
+    }
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancelar()" [disabled]="salvando()">Cancelar</button>
+  <button mat-flat-button color="primary" (click)="salvar()" [disabled]="salvando()">
+    {{ salvando() ? 'Salvando...' : 'Salvar' }}
+  </button>
+</mat-dialog-actions>

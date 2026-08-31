@@ -1,0 +1,100 @@
+@if (carregando() && !nota()) {
+  <mat-progress-bar mode="indeterminate" />
+}
+
+@if (nota(); as n) {
+  <header class="cabecalho">
+    <div class="identificacao">
+      <button mat-icon-button (click)="voltar()" matTooltip="Voltar para a lista">
+        <mat-icon>arrow_back</mat-icon>
+      </button>
+
+      <div>
+        <h1>Nota {{ n.numero }}</h1>
+        <p class="legenda">
+          Criada em {{ n.criadaEm | date:'dd/MM/yyyy HH:mm' }}
+          @if (n.fechadaEm) {
+            &nbsp;| Fechada em {{ n.fechadaEm | date:'dd/MM/yyyy HH:mm' }}
+          }
+        </p>
+      </div>
+
+      <span class="etiqueta" [class.aberta]="n.status === 'Aberta'"
+            [class.processando]="n.status === 'EmProcessamento'"
+            [class.fechada]="n.status === 'Fechada'">
+        {{ n.status }}
+      </span>
+    </div>
+
+    <div class="acoes">
+      @if (n.status === 'Fechada') {
+        <button mat-stroked-button (click)="baixarPdf()">
+          <mat-icon>picture_as_pdf</mat-icon>
+          Baixar PDF
+        </button>
+      }
+
+      <button mat-flat-button color="primary"
+              (click)="imprimir()"
+              [disabled]="!podeImprimir || imprimindo()"
+              [matTooltip]="n.status !== 'Aberta'
+                ? 'Somente notas abertas podem ser impressas'
+                : (n.itens.length === 0 ? 'Adicione ao menos um item' : 'Imprimir a nota')">
+        @if (imprimindo()) {
+          <mat-spinner diameter="18" class="spinner" />
+        } @else {
+          <mat-icon>print</mat-icon>
+        }
+        {{ imprimindo() ? 'Imprimindo...' : 'Imprimir' }}
+      </button>
+    </div>
+  </header>
+
+  @if (imprimindo()) {
+    <div class="aviso-processando">
+      <mat-progress-bar mode="indeterminate" />
+      <p>
+        Dando baixa no estoque e gerando o documento. Se algo falhar, a nota
+        volta ao status Aberta e nenhum saldo e alterado.
+      </p>
+    </div>
+  }
+
+  @if (podeEditar) {
+    <section class="adicionar">
+      <mat-form-field appearance="outline" class="campo-produto">
+        <mat-label>Produto</mat-label>
+        <input matInput
+               [formControl]="buscaProduto"
+               [matAutocomplete]="auto"
+               placeholder="Busque por codigo ou descricao" />
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="exibirProduto">
+          @for (p of sugestoes(); track p.id) {
+            <mat-option [value]="p" (onSelectionChange)="selecionar(p)">
+              <strong>{{ p.codigo }}</strong> - {{ p.descricao }}
+              <span class="saldo-sugestao">saldo {{ p.saldo }}</span>
+            </mat-option>
+          }
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="campo-quantidade">
+        <mat-label>Quantidade</mat-label>
+        <input matInput type="number" min="1" [formControl]="quantidade" />
+      </mat-form-field>
+
+      <button mat-flat-button color="accent" (click)="adicionarItem()" [disabled]="adicionando()">
+        <mat-icon>add</mat-icon>
+        {{ adicionando() ? 'Adicionando...' : 'Adicionar item' }}
+      </button>
+    </section>
+  }
+
+  <div class="cartao">
+    <app-itens-nota-tabela
+      [itens]="n.itens"
+      [somenteLeitura]="!podeEditar"
+      (remover)="removerItem($event)"
+      (alterarQuantidade)="alterarQuantidade($event)" />
+  </div>
+}

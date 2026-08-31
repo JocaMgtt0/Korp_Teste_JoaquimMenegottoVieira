@@ -1,0 +1,84 @@
+<header class="cabecalho">
+  <div>
+    <h1>Notas fiscais</h1>
+    <p class="legenda">Emissao e acompanhamento</p>
+  </div>
+
+  <button mat-flat-button color="primary" (click)="criar()" [disabled]="criando()">
+    <mat-icon>add</mat-icon>
+    {{ criando() ? 'Criando...' : 'Nova nota' }}
+  </button>
+</header>
+
+<mat-form-field appearance="outline" class="campo-filtro">
+  <mat-label>Filtrar por status</mat-label>
+  <mat-select [formControl]="filtroStatus">
+    <mat-option value="">Todos</mat-option>
+    <mat-option value="Aberta">Aberta</mat-option>
+    <mat-option value="EmProcessamento">Em processamento</mat-option>
+    <mat-option value="Fechada">Fechada</mat-option>
+  </mat-select>
+</mat-form-field>
+
+<div class="cartao">
+  @if (carregando()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
+
+  <table mat-table [dataSource]="notas()">
+    <ng-container matColumnDef="numero">
+      <th mat-header-cell *matHeaderCellDef>Numero</th>
+      <td mat-cell *matCellDef="let n"><strong>{{ n.numero }}</strong></td>
+    </ng-container>
+
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef>Status</th>
+      <td mat-cell *matCellDef="let n">
+        <span class="etiqueta" [class]="corDoStatus(n.status)">{{ n.status }}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="itens">
+      <th mat-header-cell *matHeaderCellDef class="direita">Itens</th>
+      <td mat-cell *matCellDef="let n" class="direita">{{ n.totalDeItens }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="quantidade">
+      <th mat-header-cell *matHeaderCellDef class="direita">Qtd. total</th>
+      <td mat-cell *matCellDef="let n" class="direita">{{ n.quantidadeTotal }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="criadaEm">
+      <th mat-header-cell *matHeaderCellDef>Criada em</th>
+      <td mat-cell *matCellDef="let n">{{ n.criadaEm | date:'dd/MM/yyyy HH:mm' }}</td>
+    </ng-container>
+
+    <ng-container matColumnDef="acoes">
+      <th mat-header-cell *matHeaderCellDef class="direita">Acoes</th>
+      <td mat-cell *matCellDef="let n" class="direita">
+        <button mat-icon-button matTooltip="Abrir">
+          <mat-icon>open_in_new</mat-icon>
+        </button>
+        @if (n.status === 'Aberta') {
+          <button mat-icon-button color="warn" (click)="excluir(n, $event)" matTooltip="Excluir">
+            <mat-icon>delete</mat-icon>
+          </button>
+        }
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="colunas"></tr>
+    <tr mat-row *matRowDef="let linha; columns: colunas" class="linha" (click)="abrir(linha)"></tr>
+  </table>
+
+  @if (!carregando() && notas().length === 0) {
+    <p class="vazio">Nenhuma nota encontrada.</p>
+  }
+
+  <mat-paginator
+    [length]="total()"
+    [pageSize]="tamanho"
+    [pageIndex]="pagina - 1"
+    [pageSizeOptions]="[5, 10, 25, 50]"
+    (page)="trocarPagina($event)" />
+</div>

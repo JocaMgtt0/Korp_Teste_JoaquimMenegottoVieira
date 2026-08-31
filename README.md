@@ -13,7 +13,7 @@ Teste prático Korp, desenvolvido por **Joaquim Menegotto Vieira**.
 
 | Camada | Tecnologia |
 |---|---|
-| Frontend | Angular 17, standalone components, Angular Material |
+| Frontend | Angular 22, standalone components, signals, Angular Material |
 | Backend | .NET 8, ASP.NET Core |
 | Banco | PostgreSQL 16, uma instância por serviço |
 | ORM | Entity Framework Core |

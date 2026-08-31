@@ -1,0 +1,101 @@
+.cabecalho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 500;
+  }
+}
+
+.identificacao {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legenda {
+  margin: 4px 0 0;
+  opacity: 0.7;
+  font-size: 0.85rem;
+}
+
+.acoes {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.spinner {
+  display: inline-block;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.etiqueta {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+
+  &.aberta { background: rgba(33, 150, 243, 0.18); }
+  &.processando { background: rgba(255, 152, 0, 0.22); }
+  &.fechada { background: rgba(76, 175, 80, 0.18); }
+}
+
+.aviso-processando {
+  border: 1px solid rgba(255, 152, 0, 0.4);
+  background: rgba(255, 152, 0, 0.08);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-bottom: 20px;
+
+  p {
+    margin: 0;
+    padding: 12px 16px;
+    font-size: 0.9rem;
+  }
+}
+
+.adicionar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.campo-produto {
+  flex: 1 1 340px;
+}
+
+.campo-quantidade {
+  width: 140px;
+}
+
+.saldo-sugestao {
+  // margin-left auto em vez de float: dentro da mat-option o float colava
+  // no texto anterior, produzindo "Full HDsaldo 7".
+  margin-left: auto;
+  padding-left: 12px;
+  opacity: 0.6;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+::ng-deep .mat-mdc-option .mdc-list-item__primary-text {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.cartao {
+  border-radius: 12px;
+  border: 1px solid rgba(128, 128, 128, 0.24);
+  overflow: hidden;
+}

@@ -1,0 +1,19 @@
+<mat-toolbar color="primary" class="barra">
+  <mat-icon class="marca">receipt_long</mat-icon>
+  <span class="titulo">{{ titulo }}</span>
+
+  <nav class="navegacao">
+    <a mat-button routerLink="/notas" routerLinkActive="ativo">
+      <mat-icon>description</mat-icon>
+      Notas fiscais
+    </a>
+    <a mat-button routerLink="/produtos" routerLinkActive="ativo">
+      <mat-icon>inventory_2</mat-icon>
+      Produtos
+    </a>
+  </nav>
+</mat-toolbar>
+
+<main class="conteudo">
+  <router-outlet />
+</main>

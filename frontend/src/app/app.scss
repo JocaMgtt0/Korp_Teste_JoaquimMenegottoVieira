@@ -1,0 +1,37 @@
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  gap: 12px;
+}
+
+.marca {
+  margin-right: 4px;
+}
+
+.titulo {
+  font-weight: 500;
+  letter-spacing: 0.2px;
+}
+
+.navegacao {
+  margin-left: auto;
+  display: flex;
+  gap: 4px;
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .ativo {
+    background: rgba(255, 255, 255, 0.16);
+  }
+}
+
+.conteudo {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
