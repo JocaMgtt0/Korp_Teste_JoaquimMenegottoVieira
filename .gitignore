@@ -39,3 +39,9 @@ backend/**/pdfs/
 
 # Guia de estudo pessoal, nao faz parte da entrega
 GUIA_DE_ESTUDO.md
+
+# ---- Ferramentas de assistente ----
+# Configuracao local de agentes. Nao faz parte da entrega e pode acumular
+# credenciais de sessao, o que nao pode acontecer em repositorio publico.
+.claude/
+.specify/
