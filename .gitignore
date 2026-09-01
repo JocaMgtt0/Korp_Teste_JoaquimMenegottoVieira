@@ -37,7 +37,7 @@ Thumbs.db
 backend/**/pdfs/
 *.log
 
-# Guia de estudo pessoal, nao faz parte da entrega
+# Guia de estudo pessoal
 GUIA_DE_ESTUDO.md
 
 # ---- Ferramentas de assistente ----

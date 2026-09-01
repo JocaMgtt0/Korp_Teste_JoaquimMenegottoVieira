@@ -37,8 +37,42 @@ jobs:
       # TreatNoTestsAsError impede o cenario mais traicoeiro de CI: um projeto
       # de teste que para de descobrir seus casos e mesmo assim devolve verde.
       # Sem essa trava, "zero testes executados" e considerado sucesso.
+      #
+      # Os testes de integracao sobem PostgreSQL via Testcontainers. O runner
+      # do GitHub ja tem Docker disponivel, entao nao e preciso configurar
+      # nenhum servico adicional.
       - name: Rodar os testes
         working-directory: ./backend
         run: >
           dotnet test --no-build --configuration Release --verbosity normal
           -- RunConfiguration.TreatNoTestsAsError=true
+
+  frontend:
+    name: Frontend (Angular 22)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Baixar o codigo
+        uses: actions/checkout@v4
+
+      - name: Instalar o Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      # npm ci em vez de npm install: instala exatamente o que esta no
+      # package-lock, sem resolver versoes de novo.
+      - name: Instalar dependencias
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: Compilar
+        working-directory: ./frontend
+        run: npm run build
+
+      # Vitest com jsdom, entao nao e preciso navegador no runner.
+      - name: Rodar os testes
+        working-directory: ./frontend
+        run: npm test

@@ -266,21 +266,31 @@ Documentadas por escolha, não por esquecimento:
 cd backend && dotnet test
 ```
 
-83 testes automatizados. Os de integração sobem um PostgreSQL real em container via Testcontainers, então o Docker precisa estar rodando.
+Os de integração sobem um PostgreSQL real em container via Testcontainers, então o Docker precisa estar rodando.
+
+```bash
+cd frontend && npm test
+```
+
+**159 testes automatizados**, 139 no backend e 20 no frontend.
 
 | Suíte | Testes | O que cobre |
 |---|---|---|
 | Estoque, domínio | 21 | Regras do agregado Produto: saldo nunca negativo, quantidade válida, baixa e estorno |
-| Estoque, integração | 14 | HTTP e PostgreSQL reais: CRUD, atomicidade da baixa, RN09, **e o cenário de concorrência do desafio** |
+| Estoque, aplicação | 25 | Consolidação de produto repetido na nota, unicidade de código, RN09, paginação |
+| Estoque, integração | 13 | HTTP e PostgreSQL reais: CRUD, atomicidade da baixa, **e o cenário de concorrência do desafio** |
 | Faturamento, domínio | 21 | Máquina de estados da nota e regras de edição |
-| Faturamento, caso de uso | 14 | Saga de impressão com dublês: todos os caminhos de falha e compensação |
+| Faturamento, aplicação | 46 | Saga de impressão, validação cumulativa de saldo, e a tradução de erro do cliente HTTP |
 | Faturamento, integração | 13 | HTTP e PostgreSQL reais: numeração sob concorrência, fluxo completo, PDF, compensação |
+| Frontend | 20 | Interceptors de erro e correlação, `ngOnChanges` do componente de itens, shell |
 
-Três testes merecem destaque, porque provam requisitos que asserção de código não alcança:
+Cinco testes merecem destaque, porque provam requisitos que asserção de código não alcança:
 
 - **`Duas_notas_disputando_a_ultima_unidade_apenas_uma_vence`**: duas requisições paralelas contra um produto com saldo 1. Exatamente uma passa, a outra recebe recusa explícita, e o saldo termina em zero. É o requisito opcional (a) do desafio.
 - **`Criacoes_simultaneas_nunca_repetem_numeracao`**: 20 notas criadas em paralelo, todas com número único. Prova que a sequence do banco resolve o que `MAX(numero) + 1` não resolveria.
 - **`Quando_ate_o_estorno_falha_a_nota_fica_em_processamento`**: o pior cenário da saga. A nota fica marcada como pendente em vez de voltar a Aberta, porque o saldo saiu e não voltou.
+- **`Mesmo_produto_repetido_na_nota_tem_as_quantidades_somadas`**: duas linhas de 3 unidades contra um saldo de 5. Individualmente cabem, somadas não. Sem a consolidação prévia, o estoque terminaria negativo.
+- **`AdicionarItem_considera_a_quantidade_ja_presente_na_nota`**: incluir 3 quando já há 4 exige saldo 7, não 3. Sem isso, inclusões sucessivas passariam uma a uma e a nota só estouraria na impressão.
 
 ---
 
