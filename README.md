@@ -6,6 +6,8 @@ Sistema de emissão de Notas Fiscais em arquitetura de microsserviços.
 Teste prático Korp, desenvolvido por **Joaquim Menegotto Vieira**.
 
 > Especificação completa de requisitos, regras de negócio e decisões de arquitetura: [ESPECIFICACAO.md](ESPECIFICACAO.md)
+>
+> Como a IA foi usada no desenvolvimento, e os defeitos que a verificação revelou: [DESENVOLVIMENTO_COM_IA.md](DESENVOLVIMENTO_COM_IA.md)
 
 ---
 
